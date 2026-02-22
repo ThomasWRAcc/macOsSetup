@@ -14,18 +14,19 @@ LSP + formatting tools
 
 # Quick Start
 
-## Clone the repository
+## Run the bootstrap script directly (repository needs to be public):
 
 ```bash
-git clone <your-repo-url>
-cd <your-repo-name>
+curl -fsSL https://raw.githubusercontent.com/ThomasITU/macOsSetup/main/setup.sh | bash
 ```
 
-## Run the setup script
+## Clone the repo and run the bootstrap script:
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+git clone https://github.com/ThomasITU/macOsSetup.git
+cd macOsSetup
+chmod +x bootstrap.sh
+./bootstrap.sh
 ```
 
 The script will:
@@ -116,17 +117,22 @@ If you're new to Vim-style editing:
 Neovim config:
 
 ```
-~/.config/nvim/init.lua
+.config/nvim/init.lua
 ```
 
 tmux config:
 
 ```
-~/.tmux.conf
+tmux/.tmux.conf
+```
+
+zsh config:
+
+```
+zsh/.zshrc
 ```
 
 ---
-
 
 Leader key = `Space`
 `<leader>w` → Save
