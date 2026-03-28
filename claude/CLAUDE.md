@@ -23,9 +23,10 @@ When a project uses `uv` (check for `pyproject.toml` with `[tool.uv]` or a `uv.l
 
 - **Always** use `uv run` to execute commands: `uv run pytest`, `uv run python`, `uv run mypy`, etc.
 - **Never** use bare `pytest`, `python`, or `mypy` — these resolve to the Homebrew/system binary, not the project venv.
-- **Never** use `~/.local/bin/uv` — just use `uv` directly, it's on PATH.
 - **Never** activate the venv manually or run `.venv/bin/pytest` — use `uv run` which handles venv resolution automatically.
+- If `uv` is not found, use the full path: `~/.local/bin/uv run ...`
 - If imports fail, run `uv sync` first to ensure dependencies are installed.
+- If `uv sync` fails or `uv` is missing entirely, fall back to `.venv/bin/python -m pytest` as a last resort.
 
 ## Git
 
