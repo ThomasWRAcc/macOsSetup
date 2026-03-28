@@ -17,6 +17,16 @@ Only fall back to Bash when you need shell features (pipes, variable expansion, 
 - Don't add comments, docstrings, or type annotations to code you didn't change.
 - Don't refactor or "improve" surrounding code beyond what was asked.
 
+## Python / uv Projects
+
+When a project uses `uv` (check for `pyproject.toml` with `[tool.uv]` or a `uv.lock` file):
+
+- **Always** use `uv run` to execute commands: `uv run pytest`, `uv run python`, `uv run mypy`, etc.
+- **Never** use bare `pytest`, `python`, or `mypy` — these resolve to the Homebrew/system binary, not the project venv.
+- **Never** use `~/.local/bin/uv` — just use `uv` directly, it's on PATH.
+- **Never** activate the venv manually or run `.venv/bin/pytest` — use `uv run` which handles venv resolution automatically.
+- If imports fail, run `uv sync` first to ensure dependencies are installed.
+
 ## Git
 
 - Never force push, amend published commits, or skip hooks unless explicitly asked.
