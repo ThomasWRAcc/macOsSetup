@@ -1,0 +1,63 @@
+{
+  "env": {
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git *)",
+      "Bash(*&& git *)",
+      "Bash(gh *)",
+      "Bash(*&& gh *)"
+    ],
+    "deny": [
+      "Bash(*git push --force*)",
+      "Bash(*git push -f*)",
+      "Bash(*git reset --hard*)",
+      "Bash(*git clean -f*)",
+      "Bash(*gh pr close*)",
+      "Bash(*gh pr merge*)",
+      "Bash(*gh issue close*)",
+      "Bash(*sudo *)",
+      "Bash(*rm -rf *)",
+      "Bash(*rm -r /*)",
+      "Bash(*curl *)",
+      "Bash(*wget *)",
+      "Bash(*shutdown*)",
+      "Bash(*reboot*)"
+    ]
+  },
+  "mcpServers": {
+    "vexp": {
+      "command": "vexp-core",
+      "args": [
+        "mcp",
+        "--workspace",
+        "/Users/thomas/Desktop/TradingBot"
+      ]
+    }
+  },
+  "model": "sonnet",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notification_notify.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/stop_notify.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -29,23 +29,6 @@ vim.opt.termguicolors = true
 -- Leader key
 vim.g.mapleader = " "
 
--- Basic keymaps
-vim.keymap.set("n", "<leader>w", ":w<CR>")
-vim.keymap.set("n", "<leader>q", ":q<CR>")
--- Basic settings
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.mouse = "a"
-vim.opt.clipboard = "unnamedplus"
-vim.opt.expandtab = true
-vim.opt.shiftwidth = 4
-vim.opt.tabstop = 4
-vim.opt.smartindent = true
-vim.opt.termguicolors = true
-
--- Leader key
-vim.g.mapleader = " "
-
 -- Keymaps
 vim.keymap.set("n", "<leader>w", ":w<CR>")
 vim.keymap.set("n", "<leader>q", ":q<CR>")
@@ -62,8 +45,6 @@ end
 
 
 -- Setup lazy.nvim
-vim.opt.rtp:prepend("~/.local/share/nvim/lazy/lazy.nvim")
-
 require("lazy").setup({
     -- Treesitter
     {
@@ -153,12 +134,12 @@ require("lazy").setup({
         end
     },
 
-    -- Required dependency for null-ls
+    -- Required dependency for none-ls
     { "nvim-lua/plenary.nvim" },
 
-    -- Null-ls
+    -- None-ls (formatter/linter bridge, maintained fork of null-ls)
     {
-        "jose-elias-alvarez/null-ls.nvim",
+        "nvimtools/none-ls.nvim",
         dependencies = { "plenary.nvim" },
         config = function()
             local null_ls = require("null-ls")
@@ -166,10 +147,31 @@ require("lazy").setup({
                 sources = {
                     null_ls.builtins.formatting.black,
                     null_ls.builtins.formatting.isort,
-                    null_ls.builtins.diagnostics.flake8,
                     null_ls.builtins.formatting.shfmt,
                     null_ls.builtins.formatting.prettier,
                 },
+                on_attach = function(client, bufnr)
+                    if client.supports_method("textDocument/formatting") then
+                        vim.api.nvim_create_autocmd("BufWritePre", {
+                            buffer = bufnr,
+                            callback = function()
+                                vim.lsp.buf.format({ bufnr = bufnr })
+                            end,
+                        })
+                    end
+                end,
+            })
+        end,
+    },
+
+    -- Auto-install formatters/linters via Mason
+    {
+        "jay-babu/mason-null-ls.nvim",
+        dependencies = { "williamboman/mason.nvim", "nvimtools/none-ls.nvim" },
+        config = function()
+            require("mason-null-ls").setup({
+                ensure_installed = { "black", "isort", "shfmt", "prettier" },
+                automatic_installation = true,
             })
         end,
     },

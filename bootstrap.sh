@@ -24,6 +24,7 @@ brew bundle --file=./Brewfile
 # Create config directories
 #############################################
 mkdir -p ~/.config/nvim
+mkdir -p ~/.claude/hooks
 
 #############################################
 # Symlink configs (safe + idempotent)
@@ -46,9 +47,14 @@ link_file () {
 
 echo "🔗 Linking config files..."
 
-link_file "$(pwd)/nvim/init.lua" "$HOME/.config/nvim/init.lua"
-link_file "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
-link_file "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
+REPO_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+
+link_file "$REPO_DIR/nvim/init.lua" "$HOME/.config/nvim/init.lua"
+link_file "$REPO_DIR/tmux/.tmux.conf" "$HOME/.tmux.conf"
+link_file "$REPO_DIR/zsh/.zshrc" "$HOME/.zshrc"
+link_file "$REPO_DIR/claude/settings.json" "$HOME/.claude/settings.json"
+link_file "$REPO_DIR/claude/hooks/notification_notify.sh" "$HOME/.claude/hooks/notification_notify.sh"
+link_file "$REPO_DIR/claude/hooks/stop_notify.sh" "$HOME/.claude/hooks/stop_notify.sh"
 
 #############################################
 # Install fzf keybindings (if not present)
