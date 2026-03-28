@@ -45,21 +45,14 @@ local function findAndClickAllow(elem, depth)
     return false
 end
 
-hs.hotkey.bind({"cmd", "shift"}, "A", function()
+local function allowNotification()
     -- macOS 15: notifications are under com.apple.notificationcenterui
     local app = hs.application.find("com.apple.notificationcenterui")
-    if not app then
-        hs.alert.show("No NotificationCenter", 1)
-        return
-    end
+    if not app then return end
 
     local axApp = hs.axuielement.applicationElement(app)
     local windows = axApp:attributeValue("AXWindows") or {}
-
-    if #windows == 0 then
-        hs.alert.show("No notifications visible", 1)
-        return
-    end
+    if #windows == 0 then return end
 
     for _, win in ipairs(windows) do
         if findAndClickAllow(win, 0) then
@@ -67,9 +60,32 @@ hs.hotkey.bind({"cmd", "shift"}, "A", function()
             return
         end
     end
+end
 
-    hs.alert.show("No Allow button found", 1)
-end)
+-- Double-tap Ctrl to click "Allow once" on Claude notification
+local lastCtrlTap = 0
+local doubleTapThreshold = 0.75 -- seconds
+
+ctrlTap = hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(event)
+    local flags = event:getFlags()
+    local keyCode = event:getKeyCode()
+
+    -- Ctrl key codes: 59 (left ctrl), 62 (right ctrl)
+    if keyCode ~= 59 and keyCode ~= 62 then return false end
+
+    -- Only trigger on key-up (ctrl released)
+    if flags.ctrl then return false end
+
+    local now = hs.timer.secondsSinceEpoch()
+    if (now - lastCtrlTap) < doubleTapThreshold then
+        lastCtrlTap = 0
+        allowNotification()
+    else
+        lastCtrlTap = now
+    end
+
+    return false
+end):start()
 
 -----------------------------------------------------------
 -- Auto-reload config on save

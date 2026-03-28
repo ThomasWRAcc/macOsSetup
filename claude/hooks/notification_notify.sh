@@ -11,5 +11,5 @@ case "$NTYPE" in
   *)                 TITLE="⚠️ Claude Needs You — $PROJECT" ;;
 esac
 
-afplay /System/Library/Sounds/Ping.aiff &
+afplay -v 1 /System/Library/Sounds/Ping.aiff &
 osascript -e "display notification \"$MESSAGE\" with title \"$TITLE\" subtitle \"$SUBTITLE  ·  $SESSION\""

@@ -7,5 +7,5 @@ SUBTITLE="$PROJECT"
 
 BODY="${PREVIEW:-Done}"
 
-afplay "$HOOK_DIR/sounds/smile-ringtone.mp3" &
+afplay -v 0.8 "$HOOK_DIR/sounds/smile-ringtone.mp3" &
 osascript -e "display notification \"$BODY\" with title \"✅ Claude Finished — $PROJECT\" subtitle \"$SUBTITLE  ·  $SESSION\""
