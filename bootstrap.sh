@@ -35,7 +35,14 @@ link_file () {
   local dest="$2"
 
   if [ -L "$dest" ]; then
-    echo "🔗 $dest already symlinked"
+    local current_target
+    current_target=$(readlink "$dest")
+    if [ "$current_target" = "$src" ]; then
+      echo "🔗 $dest already symlinked"
+    else
+      echo "🔄 Updating symlink $dest"
+      ln -sf "$src" "$dest"
+    fi
   elif [ -e "$dest" ]; then
     echo "⚠️  Backing up existing $dest"
     mv "$dest" "$dest.backup.$(date +%s)"
@@ -56,6 +63,7 @@ link_file "$REPO_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link_file "$REPO_DIR/hammerspoon/init.lua" "$HOME/.hammerspoon/init.lua"
 link_file "$REPO_DIR/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file "$REPO_DIR/claude/settings.json" "$HOME/.claude/settings.json"
+link_file "$REPO_DIR/claude/hooks/parse_hook.sh" "$HOME/.claude/hooks/parse_hook.sh"
 link_file "$REPO_DIR/claude/hooks/notification_notify.sh" "$HOME/.claude/hooks/notification_notify.sh"
 link_file "$REPO_DIR/claude/hooks/stop_notify.sh" "$HOME/.claude/hooks/stop_notify.sh"
 

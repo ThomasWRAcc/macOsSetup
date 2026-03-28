@@ -73,14 +73,27 @@ end)
 
 -----------------------------------------------------------
 -- Auto-reload config on save
+-- Watch both ~/.hammerspoon/ and the symlink target directory
 -----------------------------------------------------------
-hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", function(files)
+local function reloadOnLua(files)
     for _, file in pairs(files) do
         if file:sub(-4) == ".lua" then
             hs.reload()
             return
         end
     end
-end):start()
+end
+
+hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", reloadOnLua):start()
+
+-- If init.lua is a symlink, also watch the source directory
+local initPath = os.getenv("HOME") .. "/.hammerspoon/init.lua"
+local realPath = hs.fs.pathToAbsolute(initPath)
+if realPath and realPath ~= initPath then
+    local sourceDir = realPath:match("(.*/)")
+    if sourceDir then
+        hs.pathwatcher.new(sourceDir, reloadOnLua):start()
+    end
+end
 
 hs.alert.show("Hammerspoon loaded")
