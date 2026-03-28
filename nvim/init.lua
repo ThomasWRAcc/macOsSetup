@@ -74,32 +74,26 @@ require("lazy").setup({
                 ensure_installed = { "pyright", "lua_ls", "bashls", "marksman", "jsonls", "yamlls" }
             })
 
-            -- LSP keymaps
-            local on_attach = function(client, bufnr)
-                local opts = { noremap = true, silent = true }
-                local buf_set_keymap = function(mode, lhs, rhs)
-                    vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
-                end
+            -- LSP keymaps via autocmd
+            vim.api.nvim_create_autocmd("LspAttach", {
+                callback = function(args)
+                    local bufnr = args.buf
+                    local opts = { noremap = true, silent = true, buffer = bufnr }
+                    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+                    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+                    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+                    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+                    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+                    vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true }) end, opts)
+                end,
+            })
 
-                buf_set_keymap("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>")
-                buf_set_keymap("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
-                buf_set_keymap("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>")
-                buf_set_keymap("n", "gr", "<cmd>lua vim.lsp.buf.references()<CR>")
-                buf_set_keymap("n", "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>")
-                buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format({ async = true })<CR>")
-            end
+            -- Configure servers using vim.lsp.config (Neovim 0.11+)
+            vim.lsp.config("lua_ls", {
+                settings = { Lua = { diagnostics = { globals = { "vim" } } } },
+            })
 
-            local servers = { "pyright", "lua_ls", "bashls", "marksman", "jsonls", "yamlls" }
-            for _, server in ipairs(servers) do
-                local ok, lsp = pcall(require, "lspconfig")
-                if ok and lsp[server] then
-                    local opts = { on_attach = on_attach }
-                    if server == "lua_ls" then
-                        opts.settings = { Lua = { diagnostics = { globals = { "vim" } } } }
-                    end
-                    lsp[server].setup(opts)
-                end
-            end
+            vim.lsp.enable({ "pyright", "lua_ls", "bashls", "marksman", "jsonls", "yamlls" })
         end
     },
 
