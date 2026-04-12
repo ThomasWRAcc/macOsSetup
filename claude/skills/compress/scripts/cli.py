@@ -48,16 +48,22 @@ def main():
     print("Starting caveman compression...\n")
 
     try:
-        success = compress_file(filepath)
+        status = compress_file(filepath)
 
-        if success:
+        if status == "success":
             print("\nCompression completed successfully")
             backup_path = filepath.with_name(filepath.stem + ".original.md")
             print(f"Compressed: {filepath}")
             print(f"Original:   {backup_path}")
             sys.exit(0)
-        else:
-            print("\n❌ Compression failed after retries")
+        elif status == "skipped":
+            print("\nSkipped: file is not natural language")
+            sys.exit(0)
+        elif status == "aborted":
+            print("\n⚠️ Aborted: backup file already exists — remove it first to re-compress")
+            sys.exit(3)
+        else:  # "failed"
+            print("\n❌ Compression failed after retries — original restored")
             sys.exit(2)
 
     except KeyboardInterrupt:

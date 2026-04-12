@@ -17,6 +17,13 @@ SKIP_EXTENSIONS = {
     ".dockerfile", ".makefile", ".csv", ".ini", ".cfg",
 }
 
+# Extensionless filenames that are always code/config (never compressible)
+EXTENSIONLESS_CODE_FILES = {
+    "makefile", "gnumakefile", "dockerfile", "jenkinsfile",
+    "vagrantfile", "rakefile", "gemfile", "procfile",
+    "brewfile", "fastfile", "podfile",
+}
+
 # Patterns that indicate a line is code
 CODE_PATTERNS = [
     re.compile(r"^\s*(import |from .+ import |require\(|const |let |var )"),
@@ -73,7 +80,10 @@ def detect_file_type(filepath: Path) -> str:
     if ext in SKIP_EXTENSIONS:
         return "code" if ext not in {".json", ".yaml", ".yml", ".toml", ".ini", ".cfg", ".env"} else "config"
 
-    # Extensionless files (like CLAUDE.md, TODO) — check content
+    # Extensionless files (like Makefile, TODO, Procfile) — check explicit names first, then content
+    if not ext and filepath.name.lower() in EXTENSIONLESS_CODE_FILES:
+        return "code"
+
     if not ext:
         try:
             text = filepath.read_text(errors="ignore")

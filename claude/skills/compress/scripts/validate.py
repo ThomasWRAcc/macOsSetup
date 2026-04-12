@@ -4,6 +4,7 @@ from pathlib import Path
 
 URL_REGEX = re.compile(r"https?://[^\s)]+")
 CODE_BLOCK_REGEX = re.compile(r"```.*?```", re.DOTALL)
+INDENTED_CODE_BLOCK_REGEX = re.compile(r"(?:(?:^|\n)(?: {4}|\t)[^\n]+)+", re.MULTILINE)
 HEADING_REGEX = re.compile(r"^(#{1,6})\s+(.*)", re.MULTILINE)
 BULLET_REGEX = re.compile(r"^\s*[-*+]\s+", re.MULTILINE)
 
@@ -38,7 +39,9 @@ def extract_headings(text):
 
 
 def extract_code_blocks(text):
-    return CODE_BLOCK_REGEX.findall(text)
+    fenced = CODE_BLOCK_REGEX.findall(text)
+    indented = INDENTED_CODE_BLOCK_REGEX.findall(text)
+    return fenced + indented
 
 
 def extract_urls(text):
@@ -64,7 +67,7 @@ def validate_headings(orig, comp, result):
         result.add_error(f"Heading count mismatch: {len(h1)} vs {len(h2)}")
 
     if h1 != h2:
-        result.add_warning("Heading text/order changed")
+        result.add_error(f"Heading text/order changed: expected {h1}, got {h2}")
 
 
 def validate_code_blocks(orig, comp, result):
@@ -87,8 +90,13 @@ def validate_paths(orig, comp, result):
     p1 = extract_paths(orig)
     p2 = extract_paths(comp)
 
-    if p1 != p2:
-        result.add_warning(f"Path mismatch: lost={p1 - p2}, added={p2 - p1}")
+    lost = p1 - p2
+    added = p2 - p1
+
+    if lost:
+        result.add_error(f"Paths lost in compression: {lost}")
+    if added:
+        result.add_warning(f"Paths added (possible false positive): {added}")
 
 
 def validate_bullets(orig, comp, result):

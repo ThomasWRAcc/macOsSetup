@@ -99,7 +99,8 @@ Return ONLY the fixed compressed file. No explanation.
 # ---------- Core Logic ----------
 
 
-def compress_file(filepath: Path) -> bool:
+def compress_file(filepath: Path) -> str:
+    """Compress a file. Returns one of: 'success', 'skipped', 'aborted', 'failed'."""
     # Resolve and validate path
     filepath = filepath.resolve()
     MAX_FILE_SIZE = 500_000  # 500KB
@@ -112,7 +113,7 @@ def compress_file(filepath: Path) -> bool:
 
     if not should_compress(filepath):
         print("Skipping (not natural language)")
-        return False
+        return "skipped"
 
     original_text = filepath.read_text(errors="ignore")
     backup_path = filepath.with_name(filepath.stem + ".original.md")
@@ -122,7 +123,7 @@ def compress_file(filepath: Path) -> bool:
         print(f"⚠️ Backup file already exists: {backup_path}")
         print("The original backup may contain important content.")
         print("Aborting to prevent data loss. Please remove or rename the backup file if you want to proceed.")
-        return False
+        return "aborted"
 
     # Step 1: Compress
     print("Compressing with Claude...")
@@ -151,7 +152,7 @@ def compress_file(filepath: Path) -> bool:
             filepath.write_text(original_text)
             backup_path.unlink(missing_ok=True)
             print("❌ Failed after retries — original restored")
-            return False
+            return "failed"
 
         print("Fixing with Claude...")
         compressed = call_claude(
@@ -159,4 +160,4 @@ def compress_file(filepath: Path) -> bool:
         )
         filepath.write_text(compressed)
 
-    return True
+    return "success"
