@@ -1,9 +1,11 @@
 {
-  "env": {
-  },
+  "env": {},
   "permissions": {
     "allow": [
+      "Read",
+      "Write",
       "Bash(cd *)",
+      "Bash(ls)",
       "Bash(ls *)",
       "Bash(cat *)",
       "Bash(head *)",
@@ -18,12 +20,33 @@
       "Bash(* --help)",
       "Bash(git *)",
       "Bash(gh *)",
+      "Bash(docker compose *)",
+      "Bash(docker-compose *)",
+      "Bash(docker logs *)",
+      "Bash(docker ps *)",
+      "Bash(docker images *)",
+      "Bash(docker inspect *)",
+      "Bash(docker stats *)",
+      "Bash(docker exec *)",
+      "Bash(uv run *)",
+      "Bash(uv sync*)",
+      "Bash(grep *)",
+      "Bash(colima *)",
+      "Bash(ollama *)",
+      "Bash(backlog *)",
+      "Bash(sh *)",
+      "Bash(ps *)",
+      "Bash(python *)",
+      "Bash(python3 *)",
       "Bash(brew list*)",
       "Bash(brew info *)",
       "Bash(npm list*)",
       "Bash(npm info *)",
       "Bash(pip list*)",
-      "Bash(pip show *)"
+      "Bash(pip show *)",
+      "Bash(mkdir *)",
+      "Bash(tar *)",
+      "mcp__backlog__*"
     ],
     "deny": [
       "Bash(git push --force*)",
@@ -66,5 +89,6 @@
         ]
       }
     ]
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
