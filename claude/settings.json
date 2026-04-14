@@ -154,5 +154,6 @@
     }
   },
   "skipAutoPermissionPrompt": true,
-  "disableAutoMode": "disable"
+  "disableAutoMode": "disable",
+  "skipDangerousModePermissionPrompt": true
 }
